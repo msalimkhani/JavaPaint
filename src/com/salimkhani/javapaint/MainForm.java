@@ -6,9 +6,7 @@ package com.salimkhani.javapaint;
 
 import com.salimkhani.javapaint.application.*;
 import java.awt.Color;
-import javax.swing.DefaultListModel;
-import javax.swing.JColorChooser;
-import javax.swing.ListModel;
+import javax.swing.*;
 
 /**
  *
