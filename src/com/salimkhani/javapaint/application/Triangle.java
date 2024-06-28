@@ -2,6 +2,7 @@ package com.salimkhani.javapaint.application;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class Triangle extends Shape{
     public Point p1,p2,p3;
@@ -13,7 +14,10 @@ public class Triangle extends Shape{
         p2 = new Point();
         p3 = new Point();
     }
-
+    public static Triangle New(Point p1, Point p2, Point p3, Color borderColor, Color fillColor, boolean isFill, boolean  isBorder)
+    {
+        return new Triangle(p1, p2, p3, borderColor, fillColor, isFill, isBorder);
+    }
     public Triangle(Point p1, Point p2, Point p3, Color borderColor, Color fillColor, boolean isFill, boolean  isBorder) {
         super(borderColor,fillColor,isFill, isBorder);
         name = "Triangle_" + MyUtils.getRandomInt(10000);
@@ -26,8 +30,30 @@ public class Triangle extends Shape{
     
     @Override
     public void draw(Graphics myGr) {
-        System.out.printf("%s draw at %s -> %s -> %s\n", name, p1, p2,p3);
-
+        var g2d = (Graphics2D) myGr;
+        int[] xPoints = {p1.getX(), p2.getX(), p3.getX()};
+        int[] yPoints = {p1.getY(), p2.getY(), p3.getY()};
+        if(isBorder && !isFill)
+        {
+            g2d.setColor(borderColor);
+            g2d.drawPolygon(xPoints, yPoints, 3);
+        }
+        else if(!isBorder && isFill)
+        {
+            g2d.setColor(fillColor);
+            g2d.fillPolygon(xPoints, yPoints, 3);
+        }
+        else if(isBorder && isFill)
+        {
+            g2d.setColor(borderColor);
+            g2d.drawPolygon(xPoints, yPoints, 3);
+            g2d.setColor(fillColor);
+            g2d.fillPolygon(xPoints, yPoints, 3);
+        }
+        else {
+            g2d.setColor(borderColor);
+            g2d.drawPolygon(xPoints, yPoints, 3);
+        }
     }
 
     @Override

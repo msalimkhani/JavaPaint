@@ -14,7 +14,10 @@ public class Rectangle extends Shape{
         p2 = new Point();
         
     }
-
+    public static Rectangle New(Point p1, Point p2, Color borderColor,Color fillColor, boolean isFill, boolean  isBorder)
+    {
+        return new Rectangle(p1, p2, borderColor, fillColor, isFill, isBorder);
+    }
     public Rectangle(Point p1, Point p2, Color borderColor,Color fillColor, boolean isFill, boolean  isBorder) {
         super(borderColor,fillColor,isFill, isBorder);
         name = "Rectangle_" + MyUtils.getRandomInt(10000);

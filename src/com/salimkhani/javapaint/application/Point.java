@@ -7,12 +7,14 @@ public class Point {
 
     public Point() {
     }
-
+    public static Point New(int x, int y)
+    {
+        return new Point(x, y);
+    }
     public Point(int x, int y) {
         this.x = x;
         this.y = y;
     }
-
     public int getY() {
         return y;
     }

@@ -14,7 +14,10 @@ public class Circle extends Shape{
         this.radius = 1;
         
     }
-
+    public static Circle New(Point center, int radius, Color borderColor, Color fillColor, boolean isFill, boolean  isBorder)
+    {
+        return new Circle(center, radius, borderColor, fillColor, isFill, isBorder);
+    }
     public Circle(Point center, int radius, Color borderColor, Color fillColor, boolean isFill, boolean  isBorder) {
         super(borderColor,fillColor,isFill, isBorder);
         name = "Circle_" + MyUtils.getRandomInt(10000);
@@ -46,7 +49,6 @@ public class Circle extends Shape{
             myGr.setColor(borderColor);
             myGr.drawOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
         }
-        System.out.printf("%s draw at %s with radius %d and Fill Color : %s and Border Color : %s isFill=%s, isBorder=%s\n", name, center, radius, fillColor, borderColor, isFill, isBorder);
     }
 
     public void move(int xMove, int yMove) {

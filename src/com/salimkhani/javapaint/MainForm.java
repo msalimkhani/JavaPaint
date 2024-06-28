@@ -6,6 +6,7 @@ package com.salimkhani.javapaint;
 
 import com.salimkhani.javapaint.application.*;
 import java.awt.Color;
+import java.util.ArrayList;
 import javax.swing.*;
 
 /**
@@ -14,21 +15,25 @@ import javax.swing.*;
  */
 public class MainForm extends javax.swing.JFrame {
     private boolean isEntered = false;
-    private Point p1, p2, p3;
+    private Point p1, p2;
+    private ArrayList<Point> pointsForPoly;
+    private ArrayList<Circle> polygonePoints;
     private ActionTypes actionType;
     private ShapeTypes curShape;
     private Color curBorColor = Color.black;
     private Color curFillColor = Color.white;
+    private boolean hasZoom = false;
+
     /**
      * Creates new form MainForm
      */
     public MainForm() {
         initComponents();
-        area = new PaintingArea(pnlPaint.getGraphics(), pnlPaint.getHeight(), pnlPaint.getWidth());
         actionType = ActionTypes.Draw;
-        p1 = p2 = p3 = null;
+        p1 = p2 = null;
         curShape = null;
-        
+        pointsForPoly = new ArrayList<>();
+        polygonePoints = new ArrayList<>();
     }
 
     /**
@@ -43,8 +48,10 @@ public class MainForm extends javax.swing.JFrame {
         jToolBar1 = new javax.swing.JToolBar();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         btnLine = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnRect = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
+        btnTriangle = new javax.swing.JButton();
+        btnPoly = new javax.swing.JButton();
         btnErase = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
         fillCheck = new javax.swing.JCheckBox();
@@ -55,16 +62,17 @@ public class MainForm extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JToolBar.Separator();
         jLabel2 = new javax.swing.JLabel();
         eraserSize = new javax.swing.JSlider();
-        pnlPaint = new javax.swing.JPanel();
         jToolBar2 = new javax.swing.JToolBar();
         jLabel1 = new javax.swing.JLabel();
         lblPoint = new javax.swing.JLabel();
+        pnlPaint = new com.salimkhani.javapaint.PaintingPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
         jMenu3 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(752, 43));
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 formComponentResized(evt);
@@ -72,7 +80,7 @@ public class MainForm extends javax.swing.JFrame {
         });
 
         jToolBar1.setBackground(new java.awt.Color(255, 255, 255));
-        jToolBar1.setRollover(true);
+        jToolBar1.setBorder(null);
         jToolBar1.add(jSeparator3);
 
         btnLine.setText("Line");
@@ -86,16 +94,16 @@ public class MainForm extends javax.swing.JFrame {
         });
         jToolBar1.add(btnLine);
 
-        jButton2.setText("Rectangle");
-        jButton2.setFocusable(false);
-        jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnRect.setText("Rectangle");
+        btnRect.setFocusable(false);
+        btnRect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnRect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnRect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnRectActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButton2);
+        jToolBar1.add(btnRect);
 
         jButton3.setText("Circle");
         jButton3.setFocusable(false);
@@ -107,6 +115,28 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jButton3);
+
+        btnTriangle.setText("Triangle");
+        btnTriangle.setFocusable(false);
+        btnTriangle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnTriangle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnTriangle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTriangleActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnTriangle);
+
+        btnPoly.setText("PolyGone");
+        btnPoly.setFocusable(false);
+        btnPoly.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnPoly.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnPoly.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPolyActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnPoly);
 
         btnErase.setText("Eraser");
         btnErase.setFocusable(false);
@@ -163,9 +193,16 @@ public class MainForm extends javax.swing.JFrame {
         eraserSize.setMaximum(50);
         eraserSize.setMinimum(1);
         eraserSize.setMinorTickSpacing(2);
-        eraserSize.setPaintLabels(true);
         eraserSize.setPaintTicks(true);
+        eraserSize.setValue(25);
         jToolBar1.add(eraserSize);
+
+        jToolBar2.setBackground(new java.awt.Color(255, 255, 255));
+        jToolBar2.setBorder(null);
+
+        jLabel1.setText(" Point :   ");
+        jToolBar2.add(jLabel1);
+        jToolBar2.add(lblPoint);
 
         pnlPaint.setBackground(new java.awt.Color(255, 255, 255));
         pnlPaint.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
@@ -174,6 +211,11 @@ public class MainForm extends javax.swing.JFrame {
             }
             public void mouseMoved(java.awt.event.MouseEvent evt) {
                 pnlPaintMouseMoved(evt);
+            }
+        });
+        pnlPaint.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+            public void mouseWheelMoved(java.awt.event.MouseWheelEvent evt) {
+                pnlPaintMouseWheelMoved(evt);
             }
         });
         pnlPaint.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -205,13 +247,6 @@ public class MainForm extends javax.swing.JFrame {
             .addGap(0, 324, Short.MAX_VALUE)
         );
 
-        jToolBar2.setBackground(new java.awt.Color(255, 255, 255));
-        jToolBar2.setRollover(true);
-
-        jLabel1.setText(" Point :   ");
-        jToolBar2.add(jLabel1);
-        jToolBar2.add(lblPoint);
-
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
 
@@ -232,7 +267,7 @@ public class MainForm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 817, Short.MAX_VALUE)
                     .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(pnlPaint, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(pnlPaint, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -250,92 +285,14 @@ public class MainForm extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void pnlPaintMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseEntered
-        isEntered = true;
-    }//GEN-LAST:event_pnlPaintMouseEntered
-
-    private void pnlPaintMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseExited
-        isEntered = false;
-        lblPoint.setText("(" + "-" + ", " + "-" + ")");
-    }//GEN-LAST:event_pnlPaintMouseExited
-
-    private void pnlPaintMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseMoved
-        if(isEntered)
-        {
-            lblPoint.setText("(" + evt.getX() + ", " + evt.getY() + ")");
-        }
-    }//GEN-LAST:event_pnlPaintMouseMoved
-
     private void btnLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLineActionPerformed
         actionType = ActionTypes.Draw;
         curShape = ShapeTypes.Line;
     }//GEN-LAST:event_btnLineActionPerformed
 
-    private void pnlPaintMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMousePressed
-        if(actionType == ActionTypes.Draw)
-        {
-            p1 = new Point(evt.getX(), evt.getY());
-        }
-    }//GEN-LAST:event_pnlPaintMousePressed
-
-    private void pnlPaintMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseReleased
-        p2 = new Point(evt.getX(), evt.getY());
-        if(curShape != null && actionType == ActionTypes.Draw)
-        {
-            switch (curShape) {
-                case ShapeTypes.Line -> {
-                    Line l;
-                    if(!(p1 == null || p2 == null))
-                    {
-                        l = new Line(p1, p2, curBorColor);
-                        area.addShape(l);
-                        l.draw(pnlPaint.getGraphics());
-                    }
-            }
-                case ShapeTypes.Circle->{
-                    Circle c;
-                    if(!(p1 == null || p2 == null))
-                    {
-                        c = new Circle(p1,(int) p2.distance(p1), curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected());
-                        area.addShape(c);
-                        c.draw(pnlPaint.getGraphics());
-                    }
-                }
-                case ShapeTypes.Rectangle->{
-                    Rectangle r;
-                    if(!(p1 == null || p2 == null))
-                    {
-                        r = new Rectangle(p1, p2, curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected());
-                        area.addShape(r);
-                        r.draw(pnlPaint.getGraphics());
-                    }
-                }
-                default -> System.out.println("Error");
-            }
-        }
-        p1 = p2 = p3 = null;
-        
-    }//GEN-LAST:event_pnlPaintMouseReleased
-
     private void btnEraseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEraseActionPerformed
         actionType = ActionTypes.Erase;
     }//GEN-LAST:event_btnEraseActionPerformed
-
-    private void pnlPaintMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseClicked
-        
-    }//GEN-LAST:event_pnlPaintMouseClicked
-
-    private void pnlPaintMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseDragged
-        //System.out.println("(" + evt.getX() + ", " + evt.getY() + ")");
-        if(actionType == ActionTypes.Erase)
-        {
-            var p = new Point(evt.getX(), evt.getY());
-            var r = eraserSize.getValue();
-            var c = new Circle(p, r, curBorColor, Color.WHITE, true, false);
-            c.draw(pnlPaint.getGraphics());
-            
-        }
-    }//GEN-LAST:event_pnlPaintMouseDragged
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         actionType = ActionTypes.Draw;
@@ -354,14 +311,141 @@ public class MainForm extends javax.swing.JFrame {
         curBorColor = color;
     }//GEN-LAST:event_btnBorColorChooseActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnRectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRectActionPerformed
         curShape = ShapeTypes.Rectangle;
         actionType = ActionTypes.Draw;
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnRectActionPerformed
 
     private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
         pnlPaint.repaint();
     }//GEN-LAST:event_formComponentResized
+
+    private void pnlPaintMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMousePressed
+        
+        if(actionType == ActionTypes.Draw)
+        {
+            p1 = Point.New(evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_pnlPaintMousePressed
+
+    private void pnlPaintMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseReleased
+        if(actionType == ActionTypes.Draw)
+        {
+            p2 = Point.New(evt.getX(), evt.getY());
+            if(curShape == null) {
+                return;
+            }
+            switch (curShape) {
+                case Line -> {
+                    if(!(p1 == null || p2 == null))
+                    {
+                        pnlPaint.drawComponent(Line.New(p1, p2, curBorColor));
+                    }
+                }
+                case Rectangle -> {
+                    
+                    if(!(p1 == null || p2 == null))
+                    {
+                        
+                        pnlPaint.drawComponent(Rectangle.New(p1, p2, curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected()));
+                    }
+                }
+                case Circle -> {
+                    if(!(p1 == null || p2 == null))
+                    {
+                        pnlPaint.drawComponent(Circle.New(p1, (int)p2.distance(p1), curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected()));
+                    }
+                }
+                        
+            }
+        }
+    }//GEN-LAST:event_pnlPaintMouseReleased
+
+    private void btnTriangleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTriangleActionPerformed
+        curShape = ShapeTypes.Triangle;
+        actionType = ActionTypes.Draw;
+    }//GEN-LAST:event_btnTriangleActionPerformed
+
+    private void pnlPaintMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseClicked
+        var p = Point.New(evt.getX(), evt.getY());
+        if(curShape == null) {
+                return;
+            }
+        switch (curShape) {
+            case Triangle ->{
+                if(pointsForPoly.size() == 3)
+                {
+                    if(hasZoom)
+                        pnlPaint.setZoomFactor(pnlPaint.getZoomFactor());
+                    pnlPaint.repaint();
+                    pnlPaint.drawComponent(Triangle.New(pointsForPoly.get(0), pointsForPoly.get(1), pointsForPoly.get(2), curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected()));
+                    pointsForPoly.clear();
+                }
+                else {
+                    pointsForPoly.add(p);
+                    var tP = Point.New(evt.getX() + 2, evt.getY() + 2);
+                    Circle.New(p, (int) tP.distance(p), Color.black, Color.black, true, true).draw(pnlPaint.getGraphics());
+                }
+            }
+            case Polygone->{
+                if(!polygonePoints.isEmpty() && polygonePoints.get(0).hit(p))
+                {
+                    if(hasZoom)
+                        pnlPaint.setZoomFactor(pnlPaint.getZoomFactor());
+                    pnlPaint.repaint();
+                    pnlPaint.drawComponent(Polygone.New(pointsForPoly, curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected()));
+                    pointsForPoly.clear();
+                    polygonePoints.clear();
+                }
+                else {
+                    pointsForPoly.add(p);
+                    var tP = Point.New(evt.getX() + 2, evt.getY() + 2);
+                    var c = Circle.New(p, (int) tP.distance(p), Color.black, Color.black, true, true);
+                    c.draw(pnlPaint.getGraphics());
+                    polygonePoints.add(c);
+                }
+            }
+        }
+    }//GEN-LAST:event_pnlPaintMouseClicked
+
+    private void pnlPaintMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseEntered
+        isEntered = true;
+    }//GEN-LAST:event_pnlPaintMouseEntered
+
+    private void pnlPaintMouseMoved(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseMoved
+        lblPoint.setText("(" + evt.getX() + ", " + evt.getY() + ")");
+    }//GEN-LAST:event_pnlPaintMouseMoved
+
+    private void pnlPaintMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseExited
+        isEntered = false;
+        lblPoint.setText("(--, --)");
+    }//GEN-LAST:event_pnlPaintMouseExited
+
+    private void pnlPaintMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_pnlPaintMouseWheelMoved
+        hasZoom = true;
+        //Zoom in
+        if(evt.getWheelRotation()<0){
+            pnlPaint.setZoomFactor(1.1*pnlPaint.getZoomFactor());
+            pnlPaint.repaint();
+        }
+        //Zoom out
+        if(evt.getWheelRotation()>0){
+            pnlPaint.setZoomFactor(pnlPaint.getZoomFactor()/1.1);
+            pnlPaint.repaint();
+        }
+    }//GEN-LAST:event_pnlPaintMouseWheelMoved
+
+    private void btnPolyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPolyActionPerformed
+        actionType = ActionTypes.Draw;
+        curShape = ShapeTypes.Polygone;
+    }//GEN-LAST:event_btnPolyActionPerformed
+
+    private void pnlPaintMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseDragged
+        if(actionType == ActionTypes.Erase)
+        {
+            pnlPaint.drawComponent(Circle.New(Point.New(evt.getX(), evt.getY()), eraserSize.getValue(), Color.white, Color.white, true, false));
+        }
+    }//GEN-LAST:event_pnlPaintMouseDragged
 
     /**
      * @param args the command line arguments
@@ -374,6 +458,7 @@ public class MainForm extends javax.swing.JFrame {
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                //System.out.println(info.getName());
                 if ("Nimbus".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
@@ -391,10 +476,8 @@ public class MainForm extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new MainForm().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new MainForm().setVisible(true);
         });
     }
 
@@ -404,9 +487,11 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JButton btnErase;
     private javax.swing.JButton btnFillColorChoose;
     private javax.swing.JButton btnLine;
+    private javax.swing.JButton btnPoly;
+    private javax.swing.JButton btnRect;
+    private javax.swing.JButton btnTriangle;
     private javax.swing.JSlider eraserSize;
     private javax.swing.JCheckBox fillCheck;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -421,7 +506,6 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JLabel lblPoint;
-    private javax.swing.JPanel pnlPaint;
+    private com.salimkhani.javapaint.PaintingPanel pnlPaint;
     // End of variables declaration//GEN-END:variables
-    private PaintingArea area;
 }

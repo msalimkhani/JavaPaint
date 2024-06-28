@@ -8,7 +8,10 @@ public class Line extends Shape{
 
     public Point p1, p2;
 
-
+    public static Line New(Point p1, Point p2, Color borderColor)
+    {
+        return new Line(p1, p2, borderColor);
+    }
     public Line() {
         super();
         name = "Line_" + MyUtils.getRandomInt(10000);

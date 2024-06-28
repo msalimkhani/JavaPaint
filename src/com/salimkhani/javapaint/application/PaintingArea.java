@@ -7,20 +7,19 @@ import java.util.ArrayList;
 public class PaintingArea {
 
     public ArrayList<Shape> shapeArr;
-    public Graphics myGr;
     public int height, width;
 
-    public PaintingArea(Graphics myGr,int height, int width) {
+    public PaintingArea(int height, int width) {
         shapeArr = new ArrayList();
-        this.myGr = myGr; 
         this.height = height;
         this.width = width;
         
     }
-    
+    public static PaintingArea New(int height, int width) {
+        return new PaintingArea(height, width);
+    }
     public void addShape(Shape s) {
         shapeArr.add(s);
-        s.draw(myGr);
     }
 
     public int indexOf(Shape s) {
@@ -32,23 +31,22 @@ public class PaintingArea {
 
         int idx = indexOf(s);
         Shape removedItem = shapeArr.remove(idx);
-        reDrawAll();
         return removedItem;
     }
 
-    public void reDrawAll(){
-        myGr.setColor(Color.white);
-        myGr.fillRect(0, 0, width, height);
+    public void reDrawAll(Graphics gr){
+        //myGr.setColor(Color.white);
+        //myGr.fillRect(0, 0, width, height);
         for (Shape s : shapeArr) {
-            s.draw(myGr);
+            s.draw(gr);
         }
     }
-    public void moveShape(Shape s, int xMove, int yMove) {
+    public void moveShape(Shape s, int xMove, int yMove,Graphics gr) {
         int idx = indexOf(s);
         if (idx > -1) {
             s.move(xMove, yMove);
         }
-        reDrawAll();
+        reDrawAll(gr);
     }
 
     public Shape searchShapeByPoint(Point p) {
