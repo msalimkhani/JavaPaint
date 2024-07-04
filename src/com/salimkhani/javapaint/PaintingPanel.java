@@ -5,9 +5,11 @@
 package com.salimkhani.javapaint;
 import com.salimkhani.javapaint.application.PaintingArea;
 import com.salimkhani.javapaint.application.Shape;
+import com.salimkhani.javapaint.application.Point;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+import org.javatuples.Pair;
+
 
 /**
  *
@@ -55,6 +57,21 @@ public class PaintingPanel extends javax.swing.JPanel {
         pArea.addShape(s);
         repaint();
         //s.draw(getGraphics());
+    }
+    public void removeComponet(Shape s)
+    {
+        pArea.removeShape(s);
+        repaint();
+    }
+    public Pair<Boolean, Shape> selectComponent(Point p)
+    {
+        for (var s : pArea.shapeArr) {
+            if(s.select(getGraphics(), p))
+            {
+                return new Pair<Boolean, Shape>(true, s);
+            }
+        }
+        return new Pair<Boolean, Shape>(false, null);
     }
     /**
      * This method is called from within the constructor to initialize the form.

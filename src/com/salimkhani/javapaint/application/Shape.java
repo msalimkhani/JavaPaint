@@ -24,12 +24,12 @@ public abstract class Shape {
         this.isBorder = isBorder;
     }
     
-    
+    public abstract boolean select(Graphics gr, Point p);
     public abstract void draw(Graphics myGr);
     
     public abstract void move(int xMove, int yMove);
     
     public abstract void erase();
-    
+    public abstract Shape copy();
     public abstract boolean hit(Point p);
 }

@@ -2,6 +2,7 @@ package com.salimkhani.javapaint.application;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class Rectangle extends Shape{
     public Point p1, p2;
@@ -81,6 +82,24 @@ public class Rectangle extends Shape{
             p1.setY(p2.getY());
             p2.setY(t);
         }
+    }
+
+    @Override
+    public boolean select(Graphics gr, Point p) {
+        var g2d = (Graphics2D) gr;
+        if(hit(p))
+        {
+            g2d.setColor(Color.gray);
+            g2d.drawRect(p1.getX() + 1, p1.getY() + 1, 1 + (p2.getX()-p1.getX()), 1 + (p2.getY()-p1.getY()));
+            return true;
+        }
+        return false;
+    }
+
+
+    @Override
+    public Shape copy() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 }

@@ -2,6 +2,7 @@ package com.salimkhani.javapaint.application;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 public class Circle extends Shape{
     public Point center;
@@ -54,16 +55,30 @@ public class Circle extends Shape{
     public void move(int xMove, int yMove) {
         center.setX(center.getX() + xMove);
         center.setY(center.getY() + yMove);
-        
-
     }
     
     public void erase(){
         System.out.printf("%s erased\n",name);
     }
-    
+    public boolean select(Graphics gr, Point p)
+    {
+        var g2d = (Graphics2D) gr;
+        if(hit(p))
+        {
+            g2d.setColor(Color.gray);
+            g2d.drawRect(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            return true;
+        }
+        return false;
+    }
     public boolean hit(Point p){
         return center.distance(p)<= radius;
+    }
+
+    @Override
+    public Shape copy() {
+        
+        return new Circle(Point.New(center.getX(), center.getY()), radius, borderColor, fillColor, isFill, isBorder);
     }
 
     

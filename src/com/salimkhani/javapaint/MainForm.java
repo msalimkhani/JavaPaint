@@ -6,15 +6,23 @@ package com.salimkhani.javapaint;
 
 import com.salimkhani.javapaint.application.*;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import javax.swing.*;
+import org.javatuples.Pair;
 
 /**
  *
  * @author mahdi
  */
 public class MainForm extends javax.swing.JFrame {
-    private boolean isEntered = false;
+    private boolean isEntered = false;    
+    private boolean isSelected = false;
+    private Shape selctedShape = null;
+    private Shape clipboardShape = null;
+
     private Point p1, p2;
     private ArrayList<Point> pointsForPoly;
     private ArrayList<Circle> polygonePoints;
@@ -22,6 +30,7 @@ public class MainForm extends javax.swing.JFrame {
     private ShapeTypes curShape;
     private Color curBorColor = Color.black;
     private Color curFillColor = Color.white;
+    Point mousePt = null;
     private boolean hasZoom = false;
 
     /**
@@ -34,6 +43,23 @@ public class MainForm extends javax.swing.JFrame {
         curShape = null;
         pointsForPoly = new ArrayList<>();
         polygonePoints = new ArrayList<>();
+        var deleteMenuItem = new JMenuItem("Delete");
+        var copyMenuItem = new JMenuItem("Copy");
+        var pasteMenuItem = new JMenuItem("Paste");
+        deleteMenuItem.addActionListener((e) -> {
+            btnDeleteMenuItemActionPerformed(e);
+        });
+        copyMenuItem.addActionListener(((e) -> {
+            btnCopyMenuItemActionPerformed(e);
+        }));
+        pasteMenuItem.addActionListener(((e) -> {
+            btnPasteMenuItemActionPerformed(e);
+        }));
+        menuPanel.add(deleteMenuItem);        
+        menuPanel.add(copyMenuItem);        
+        menuPanel.add(pasteMenuItem);
+
+
     }
 
     /**
@@ -45,14 +71,18 @@ public class MainForm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        menuPanel = new javax.swing.JPopupMenu();
         jToolBar1 = new javax.swing.JToolBar();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         btnLine = new javax.swing.JButton();
         btnRect = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnCircle = new javax.swing.JButton();
         btnTriangle = new javax.swing.JButton();
         btnPoly = new javax.swing.JButton();
+        btnOval = new javax.swing.JButton();
+        jSeparator5 = new javax.swing.JToolBar.Separator();
         btnErase = new javax.swing.JButton();
+        btnSelect = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
         fillCheck = new javax.swing.JCheckBox();
         borderCheck = new javax.swing.JCheckBox();
@@ -76,6 +106,16 @@ public class MainForm extends javax.swing.JFrame {
         addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentResized(java.awt.event.ComponentEvent evt) {
                 formComponentResized(evt);
+            }
+        });
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowOpened(java.awt.event.WindowEvent evt) {
+                formWindowOpened(evt);
+            }
+        });
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
             }
         });
 
@@ -105,16 +145,16 @@ public class MainForm extends javax.swing.JFrame {
         });
         jToolBar1.add(btnRect);
 
-        jButton3.setText("Circle");
-        jButton3.setFocusable(false);
-        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        btnCircle.setText("Circle");
+        btnCircle.setFocusable(false);
+        btnCircle.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnCircle.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnCircle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                btnCircleActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButton3);
+        jToolBar1.add(btnCircle);
 
         btnTriangle.setText("Triangle");
         btnTriangle.setFocusable(false);
@@ -138,6 +178,18 @@ public class MainForm extends javax.swing.JFrame {
         });
         jToolBar1.add(btnPoly);
 
+        btnOval.setText("Oval");
+        btnOval.setFocusable(false);
+        btnOval.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnOval.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnOval.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnOvalActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnOval);
+        jToolBar1.add(jSeparator5);
+
         btnErase.setText("Eraser");
         btnErase.setFocusable(false);
         btnErase.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -148,6 +200,17 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(btnErase);
+
+        btnSelect.setText("Select");
+        btnSelect.setFocusable(false);
+        btnSelect.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnSelect.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnSelect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSelectActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnSelect);
         jToolBar1.add(jSeparator2);
 
         fillCheck.setText("Have filled?");
@@ -235,6 +298,14 @@ public class MainForm extends javax.swing.JFrame {
                 pnlPaintMouseReleased(evt);
             }
         });
+        pnlPaint.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                pnlPaintKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                pnlPaintKeyTyped(evt);
+            }
+        });
 
         javax.swing.GroupLayout pnlPaintLayout = new javax.swing.GroupLayout(pnlPaint);
         pnlPaint.setLayout(pnlPaintLayout);
@@ -265,7 +336,7 @@ public class MainForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 817, Short.MAX_VALUE)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 842, Short.MAX_VALUE)
                     .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlPaint, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -294,17 +365,30 @@ public class MainForm extends javax.swing.JFrame {
         actionType = ActionTypes.Erase;
     }//GEN-LAST:event_btnEraseActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void btnCircleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCircleActionPerformed
         actionType = ActionTypes.Draw;
         curShape = ShapeTypes.Circle;
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_btnCircleActionPerformed
 
     private void btnFillColorChooseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnFillColorChooseActionPerformed
         Color color = JColorChooser.showDialog(this, "Select Fill Color", curFillColor);
         btnFillColorChoose.setBackground(color);
         curFillColor = color;
     }//GEN-LAST:event_btnFillColorChooseActionPerformed
+    private void btnCopyMenuItemActionPerformed(ActionEvent e) {
+        if(isSelected && selctedShape != null)
+        {
+            clipboardShape = selctedShape.copy();
+        }
+    }
 
+    private void btnPasteMenuItemActionPerformed(ActionEvent e) {
+        if(clipboardShape != null)
+        {
+            clipboardShape.move(5, 5);
+            pnlPaint.drawComponent(clipboardShape);
+        }
+    }
     private void btnBorColorChooseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorColorChooseActionPerformed
         Color color = JColorChooser.showDialog(this, "Select Fill Color", curBorColor);
         btnBorColorChoose.setBackground(color);
@@ -325,6 +409,10 @@ public class MainForm extends javax.swing.JFrame {
         if(actionType == ActionTypes.Draw)
         {
             p1 = Point.New(evt.getX(), evt.getY());
+        }
+        if(actionType == ActionTypes.Move)
+        {
+            mousePt = Point.New(evt.getX(), evt.getY());
         }
     }//GEN-LAST:event_pnlPaintMousePressed
 
@@ -356,6 +444,12 @@ public class MainForm extends javax.swing.JFrame {
                         pnlPaint.drawComponent(Circle.New(p1, (int)p2.distance(p1), curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected()));
                     }
                 }
+                case Oval -> {
+                    if(!(p1 == null || p2 == null))
+                    {
+                        pnlPaint.drawComponent(Oval.New(p1, p2, curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected()));
+                    }
+                }
                         
             }
         }
@@ -367,8 +461,20 @@ public class MainForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnTriangleActionPerformed
 
     private void pnlPaintMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseClicked
+        if(evt.isMetaDown())
+        {
+            menuPanel.show(pnlPaint, evt.getX(), evt.getY());
+        }
         var p = Point.New(evt.getX(), evt.getY());
-        if(curShape == null) {
+        if(actionType == ActionTypes.Move)
+        {
+            Pair<Boolean, Shape> selected = pnlPaint.selectComponent(p);
+            isSelected = selected.getValue0();
+            selctedShape = selected.getValue1();
+        }
+        if(actionType == ActionTypes.Draw)
+        {
+            if(curShape == null) {
                 return;
             }
         switch (curShape) {
@@ -406,8 +512,15 @@ public class MainForm extends javax.swing.JFrame {
                 }
             }
         }
+        }
     }//GEN-LAST:event_pnlPaintMouseClicked
-
+    private void btnDeleteMenuItemActionPerformed(ActionEvent e) {
+        if(isSelected && selctedShape != null)
+            {
+                System.out.println("removed");
+                pnlPaint.removeComponet(selctedShape);
+            }
+    }
     private void pnlPaintMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseEntered
         isEntered = true;
     }//GEN-LAST:event_pnlPaintMouseEntered
@@ -445,7 +558,64 @@ public class MainForm extends javax.swing.JFrame {
         {
             pnlPaint.drawComponent(Circle.New(Point.New(evt.getX(), evt.getY()), eraserSize.getValue(), Color.white, Color.white, true, false));
         }
+        if(actionType == ActionTypes.Move && isSelected && selctedShape != null)
+        {
+            if(selctedShape.hit(Point.New(evt.getX(), evt.getY())))
+            {
+                int dx = evt.getX() - mousePt.getX();
+                int dy = evt.getY() - mousePt.getY();
+                selctedShape.move(dx, dy);
+                mousePt = Point.New(evt.getX(), evt.getY());
+                pnlPaint.repaint();
+            }
+        }
     }//GEN-LAST:event_pnlPaintMouseDragged
+
+    private void btnOvalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOvalActionPerformed
+        actionType = ActionTypes.Draw;
+        curShape = ShapeTypes.Oval;
+    }//GEN-LAST:event_btnOvalActionPerformed
+
+    private void btnSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSelectActionPerformed
+        actionType = ActionTypes.Move;
+    }//GEN-LAST:event_btnSelectActionPerformed
+
+    private void pnlPaintKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_pnlPaintKeyTyped
+        if(evt.getKeyCode() == KeyEvent.VK_DELETE)
+        {
+            if(isSelected && selctedShape != null)
+            {
+                System.out.println("removed");
+                pnlPaint.removeComponet(selctedShape);
+            }
+        }
+    }//GEN-LAST:event_pnlPaintKeyTyped
+
+    private void pnlPaintKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_pnlPaintKeyPressed
+        if(evt.getKeyCode() == KeyEvent.VK_DELETE)
+        {
+            if(isSelected && selctedShape != null)
+            {
+                System.out.println("removed");
+                pnlPaint.removeComponet(selctedShape);
+            }
+        }
+    }//GEN-LAST:event_pnlPaintKeyPressed
+
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        
+    }//GEN-LAST:event_formWindowOpened
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        if(evt.getKeyCode() == KeyEvent.VK_DELETE)
+        {
+            if(isSelected && selctedShape != null)
+            {
+                System.out.println("removed");
+                pnlPaint.removeComponet(selctedShape);
+            }
+        }
+    }//GEN-LAST:event_formKeyPressed
 
     /**
      * @param args the command line arguments
@@ -484,15 +654,17 @@ public class MainForm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox borderCheck;
     private javax.swing.JButton btnBorColorChoose;
+    private javax.swing.JButton btnCircle;
     private javax.swing.JButton btnErase;
     private javax.swing.JButton btnFillColorChoose;
     private javax.swing.JButton btnLine;
+    private javax.swing.JButton btnOval;
     private javax.swing.JButton btnPoly;
     private javax.swing.JButton btnRect;
+    private javax.swing.JButton btnSelect;
     private javax.swing.JButton btnTriangle;
     private javax.swing.JSlider eraserSize;
     private javax.swing.JCheckBox fillCheck;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
@@ -503,9 +675,11 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JToolBar.Separator jSeparator4;
+    private javax.swing.JToolBar.Separator jSeparator5;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JLabel lblPoint;
+    private javax.swing.JPopupMenu menuPanel;
     private com.salimkhani.javapaint.PaintingPanel pnlPaint;
     // End of variables declaration//GEN-END:variables
 }

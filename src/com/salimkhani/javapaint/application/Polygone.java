@@ -74,5 +74,20 @@ public class Polygone extends Shape{
     public boolean hit(Point p) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
+
+    @Override
+    public boolean select(Graphics gr, Point p) {
+        var g2d = (Graphics2D) gr;
+        if(hit(p))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Shape copy() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }
