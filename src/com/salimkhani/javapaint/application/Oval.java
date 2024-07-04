@@ -74,7 +74,8 @@ public class Oval extends Shape{
 
     @Override
     public void move(int xMove, int yMove) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        p1.setX(p1.getX() + xMove);
+        p1.setY(p1.getY() + yMove);
     }
 
     @Override
@@ -102,6 +103,6 @@ public class Oval extends Shape{
 
     @Override
     public Shape copy() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Oval(p1, p2, borderColor, fillColor, isFill, isBorder);
     }
 }

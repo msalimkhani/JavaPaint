@@ -62,7 +62,10 @@ public class Polygone extends Shape{
 
     @Override
     public void move(int xMove, int yMove) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        for (Point point : points) {
+            point.setX(point.getX() + xMove);
+            point.setY(point.getY() + yMove);
+        }
     }
 
     @Override
@@ -87,7 +90,7 @@ public class Polygone extends Shape{
 
     @Override
     public Shape copy() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Polygone(points, borderColor, fillColor, isFill, isBorder);
     }
     
 }

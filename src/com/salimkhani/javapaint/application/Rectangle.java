@@ -90,7 +90,7 @@ public class Rectangle extends Shape{
         if(hit(p))
         {
             g2d.setColor(Color.gray);
-            g2d.drawRect(p1.getX() + 1, p1.getY() + 1, 1 + (p2.getX()-p1.getX()), 1 + (p2.getY()-p1.getY()));
+            g2d.drawRect(p1.getX() - 2, p1.getY() - 2, 2 + (p2.getX()-p1.getX()), 2 + (p2.getY()-p1.getY()));
             return true;
         }
         return false;
@@ -99,7 +99,7 @@ public class Rectangle extends Shape{
 
     @Override
     public Shape copy() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Rectangle(p1, p2, borderColor, fillColor, isFill, isBorder);
     }
 
 }

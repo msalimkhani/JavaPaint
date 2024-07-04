@@ -103,7 +103,7 @@ public class Triangle extends Shape{
 
     @Override
     public Shape copy() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Triangle(p1, p2, p3, borderColor, fillColor, isFill, isBorder);
     }
     
 }

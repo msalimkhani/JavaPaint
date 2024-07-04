@@ -83,6 +83,7 @@ public class MainForm extends javax.swing.JFrame {
         jSeparator5 = new javax.swing.JToolBar.Separator();
         btnErase = new javax.swing.JButton();
         btnSelect = new javax.swing.JButton();
+        btnResetZoom = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
         fillCheck = new javax.swing.JCheckBox();
         borderCheck = new javax.swing.JCheckBox();
@@ -211,6 +212,17 @@ public class MainForm extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(btnSelect);
+
+        btnResetZoom.setText("Reset Zoom");
+        btnResetZoom.setFocusable(false);
+        btnResetZoom.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        btnResetZoom.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        btnResetZoom.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnResetZoomActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(btnResetZoom);
         jToolBar1.add(jSeparator2);
 
         fillCheck.setText("Have filled?");
@@ -336,7 +348,7 @@ public class MainForm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 842, Short.MAX_VALUE)
+                    .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 901, Short.MAX_VALUE)
                     .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(pnlPaint, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
@@ -434,7 +446,6 @@ public class MainForm extends javax.swing.JFrame {
                     
                     if(!(p1 == null || p2 == null))
                     {
-                        
                         pnlPaint.drawComponent(Rectangle.New(p1, p2, curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected()));
                     }
                 }
@@ -481,8 +492,6 @@ public class MainForm extends javax.swing.JFrame {
             case Triangle ->{
                 if(pointsForPoly.size() == 3)
                 {
-                    if(hasZoom)
-                        pnlPaint.setZoomFactor(pnlPaint.getZoomFactor());
                     pnlPaint.repaint();
                     pnlPaint.drawComponent(Triangle.New(pointsForPoly.get(0), pointsForPoly.get(1), pointsForPoly.get(2), curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected()));
                     pointsForPoly.clear();
@@ -496,8 +505,6 @@ public class MainForm extends javax.swing.JFrame {
             case Polygone->{
                 if(!polygonePoints.isEmpty() && polygonePoints.get(0).hit(p))
                 {
-                    if(hasZoom)
-                        pnlPaint.setZoomFactor(pnlPaint.getZoomFactor());
                     pnlPaint.repaint();
                     pnlPaint.drawComponent(Polygone.New(pointsForPoly, curBorColor, curFillColor, fillCheck.isSelected(), borderCheck.isSelected()));
                     pointsForPoly.clear();
@@ -517,7 +524,6 @@ public class MainForm extends javax.swing.JFrame {
     private void btnDeleteMenuItemActionPerformed(ActionEvent e) {
         if(isSelected && selctedShape != null)
             {
-                System.out.println("removed");
                 pnlPaint.removeComponet(selctedShape);
             }
     }
@@ -585,7 +591,6 @@ public class MainForm extends javax.swing.JFrame {
         {
             if(isSelected && selctedShape != null)
             {
-                System.out.println("removed");
                 pnlPaint.removeComponet(selctedShape);
             }
         }
@@ -596,7 +601,7 @@ public class MainForm extends javax.swing.JFrame {
         {
             if(isSelected && selctedShape != null)
             {
-                System.out.println("removed");
+                
                 pnlPaint.removeComponet(selctedShape);
             }
         }
@@ -611,11 +616,14 @@ public class MainForm extends javax.swing.JFrame {
         {
             if(isSelected && selctedShape != null)
             {
-                System.out.println("removed");
                 pnlPaint.removeComponet(selctedShape);
             }
         }
     }//GEN-LAST:event_formKeyPressed
+
+    private void btnResetZoomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetZoomActionPerformed
+        pnlPaint.repaint();
+    }//GEN-LAST:event_btnResetZoomActionPerformed
 
     /**
      * @param args the command line arguments
@@ -661,6 +669,7 @@ public class MainForm extends javax.swing.JFrame {
     private javax.swing.JButton btnOval;
     private javax.swing.JButton btnPoly;
     private javax.swing.JButton btnRect;
+    private javax.swing.JButton btnResetZoom;
     private javax.swing.JButton btnSelect;
     private javax.swing.JButton btnTriangle;
     private javax.swing.JSlider eraserSize;
