@@ -20,7 +20,7 @@ import org.javatuples.Pair;
 public class MainForm extends javax.swing.JFrame {
     private boolean isEntered = false;    
     private boolean isSelected = false;
-    private Shape selctedShape = null;
+    private Shape selectedShape = null;
     private Shape clipboardShape = null;
 
     private Point p1, p2;
@@ -46,6 +46,12 @@ public class MainForm extends javax.swing.JFrame {
         var deleteMenuItem = new JMenuItem("Delete");
         var copyMenuItem = new JMenuItem("Copy");
         var pasteMenuItem = new JMenuItem("Paste");
+        var colorSectionSubMenu = new JMenu("Color");
+        var pushFrontMenuItem = new JMenuItem("Push to Front");
+        var setFillColorMenuItem = new JMenuItem("Set Fill Color");
+        var setBorderColorMenuItem = new JMenuItem("Set Border Color");
+        var removeFillColorMenuItem = new JMenuItem("Remove Fill Color");
+        var removeBorderColorMenuItem = new JMenuItem("Remove Border Color");
         deleteMenuItem.addActionListener((e) -> {
             btnDeleteMenuItemActionPerformed(e);
         });
@@ -55,6 +61,17 @@ public class MainForm extends javax.swing.JFrame {
         pasteMenuItem.addActionListener(((e) -> {
             btnPasteMenuItemActionPerformed(e);
         }));
+        pushFrontMenuItem.addActionListener(((e)->{pushFrontMenuItemActionPerformed(e);}));
+        setFillColorMenuItem.addActionListener((e) -> {setFillColorMenuItemActionPerformed(e);});
+        setBorderColorMenuItem.addActionListener((e) -> setBorderColorMenuItemActionPerformed(e));
+        removeFillColorMenuItem.addActionListener((e) -> removeFillColorMenuItemActionPerformed(e));
+        removeBorderColorMenuItem.addActionListener((e) -> removeBorderColorMenuItemActionPerformded(e));
+        colorSectionSubMenu.add(setFillColorMenuItem);
+        colorSectionSubMenu.add(setBorderColorMenuItem);
+        colorSectionSubMenu.add(removeFillColorMenuItem);
+        colorSectionSubMenu.add(removeBorderColorMenuItem);
+        menuPanel.add(pushFrontMenuItem);
+        menuPanel.add(colorSectionSubMenu);
         menuPanel.add(deleteMenuItem);        
         menuPanel.add(copyMenuItem);        
         menuPanel.add(pasteMenuItem);
@@ -388,21 +405,75 @@ public class MainForm extends javax.swing.JFrame {
         curFillColor = color;
     }//GEN-LAST:event_btnFillColorChooseActionPerformed
     private void btnCopyMenuItemActionPerformed(ActionEvent e) {
-        if(isSelected && selctedShape != null)
+        if(isSelected && selectedShape != null)
         {
-            clipboardShape = selctedShape.copy();
+            clipboardShape = selectedShape.copy();
         }
     }
 
     private void btnPasteMenuItemActionPerformed(ActionEvent e) {
         if(clipboardShape != null)
         {
-            clipboardShape.move(5, 5);
+            clipboardShape.move(10, 10);
             pnlPaint.drawComponent(clipboardShape);
         }
+        clipboardShape = null;
+        isSelected = false;
+    }
+    private void btnDeleteMenuItemActionPerformed(ActionEvent e) {
+        if(isSelected && selectedShape != null)
+        {
+            pnlPaint.removeComponet(selectedShape);
+        }
+        isSelected = false;
+    }
+    private void pushFrontMenuItemActionPerformed(ActionEvent e)
+    {
+        if(selectedShape != null && isSelected)
+        {
+            pnlPaint.pushComponentToFront(selectedShape);
+        }
+        isSelected = false;
+    }
+    private void setFillColorMenuItemActionPerformed(ActionEvent e)
+    {
+        if(selectedShape != null && isSelected)
+        {
+            selectedShape.fillColor = curFillColor;
+            selectedShape.isFill = true;
+            pnlPaint.repaint();
+        }
+        isSelected = false;
+    }
+    private void setBorderColorMenuItemActionPerformed(ActionEvent e)
+    {
+        if(selectedShape != null && isSelected)
+        {
+            selectedShape.borderColor = curBorColor;
+            selectedShape.isBorder = true;
+            pnlPaint.repaint();
+        }
+        isSelected = false;
+    }
+    private void removeFillColorMenuItemActionPerformed(ActionEvent e) {
+        if(selectedShape != null && isSelected)
+        {
+            selectedShape.isFill = false;
+            pnlPaint.repaint();
+        }
+        isSelected = false;
+    }
+
+    private void removeBorderColorMenuItemActionPerformded(ActionEvent e) {
+        if(selectedShape != null && isSelected)
+        {
+            selectedShape.isBorder = false;
+            pnlPaint.repaint();
+        }
+        isSelected = false;
     }
     private void btnBorColorChooseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorColorChooseActionPerformed
-        Color color = JColorChooser.showDialog(this, "Select Fill Color", curBorColor);
+        Color color = JColorChooser.showDialog(this, "Select Border Color", curBorColor);
         btnBorColorChoose.setBackground(color);
         curBorColor = color;
     }//GEN-LAST:event_btnBorColorChooseActionPerformed
@@ -481,7 +552,7 @@ public class MainForm extends javax.swing.JFrame {
         {
             Pair<Boolean, Shape> selected = pnlPaint.selectComponent(p);
             isSelected = selected.getValue0();
-            selctedShape = selected.getValue1();
+            selectedShape = selected.getValue1();
         }
         if(actionType == ActionTypes.Draw)
         {
@@ -521,12 +592,7 @@ public class MainForm extends javax.swing.JFrame {
         }
         }
     }//GEN-LAST:event_pnlPaintMouseClicked
-    private void btnDeleteMenuItemActionPerformed(ActionEvent e) {
-        if(isSelected && selctedShape != null)
-            {
-                pnlPaint.removeComponet(selctedShape);
-            }
-    }
+    
     private void pnlPaintMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_pnlPaintMouseEntered
         isEntered = true;
     }//GEN-LAST:event_pnlPaintMouseEntered
@@ -564,13 +630,13 @@ public class MainForm extends javax.swing.JFrame {
         {
             pnlPaint.drawComponent(Circle.New(Point.New(evt.getX(), evt.getY()), eraserSize.getValue(), Color.white, Color.white, true, false));
         }
-        if(actionType == ActionTypes.Move && isSelected && selctedShape != null)
+        if(actionType == ActionTypes.Move && isSelected && selectedShape != null)
         {
-            if(selctedShape.hit(Point.New(evt.getX(), evt.getY())))
+            if(selectedShape.hit(Point.New(evt.getX(), evt.getY())))
             {
                 int dx = evt.getX() - mousePt.getX();
                 int dy = evt.getY() - mousePt.getY();
-                selctedShape.move(dx, dy);
+                selectedShape.move(dx, dy);
                 mousePt = Point.New(evt.getX(), evt.getY());
                 pnlPaint.repaint();
             }
@@ -589,9 +655,9 @@ public class MainForm extends javax.swing.JFrame {
     private void pnlPaintKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_pnlPaintKeyTyped
         if(evt.getKeyCode() == KeyEvent.VK_DELETE)
         {
-            if(isSelected && selctedShape != null)
+            if(isSelected && selectedShape != null)
             {
-                pnlPaint.removeComponet(selctedShape);
+                pnlPaint.removeComponet(selectedShape);
             }
         }
     }//GEN-LAST:event_pnlPaintKeyTyped
@@ -599,10 +665,10 @@ public class MainForm extends javax.swing.JFrame {
     private void pnlPaintKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_pnlPaintKeyPressed
         if(evt.getKeyCode() == KeyEvent.VK_DELETE)
         {
-            if(isSelected && selctedShape != null)
+            if(isSelected && selectedShape != null)
             {
                 
-                pnlPaint.removeComponet(selctedShape);
+                pnlPaint.removeComponet(selectedShape);
             }
         }
     }//GEN-LAST:event_pnlPaintKeyPressed
@@ -614,9 +680,9 @@ public class MainForm extends javax.swing.JFrame {
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
         if(evt.getKeyCode() == KeyEvent.VK_DELETE)
         {
-            if(isSelected && selctedShape != null)
+            if(isSelected && selectedShape != null)
             {
-                pnlPaint.removeComponet(selctedShape);
+                pnlPaint.removeComponet(selectedShape);
             }
         }
     }//GEN-LAST:event_formKeyPressed

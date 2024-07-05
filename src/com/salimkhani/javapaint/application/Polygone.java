@@ -7,6 +7,8 @@ package com.salimkhani.javapaint.application;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 /**
@@ -57,7 +59,7 @@ public class Polygone extends Shape{
             g2d.setColor(borderColor);
             g2d.drawPolygon(xPoints, yPoints, xPoints.length);
         }
-        System.out.println("Polygone : " + xPoints.length + " Color : " + borderColor + ", " + fillColor);
+        //System.out.println("Polygone : " + xPoints.length + " Color : " + borderColor + ", " + fillColor);
     }
 
     @Override
@@ -70,19 +72,35 @@ public class Polygone extends Shape{
 
     @Override
     public void erase() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        
     }
 
     @Override
     public boolean hit(Point p) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        Path2D path = new Path2D.Double();
+        path.moveTo(points.get(0).getX(), points.get(0).getY());
+        for (Point point : points) {
+            path.lineTo(point.getX(), point.getY());
+        }
+        path.closePath();
+        Point2D testPoint = new Point2D.Double(p.getX(), p.getY());
+        return path.contains(testPoint);
     }
 
     @Override
     public boolean select(Graphics gr, Point p) {
         var g2d = (Graphics2D) gr;
+        int[] xPoints = new int[points.size()];
+        int[] yPoints = new int[points.size()];
+        for(int i = 0; i < xPoints.length; i++)
+        {
+            xPoints[i] = points.get(i).getX();
+            yPoints[i] = points.get(i).getY();
+        }
         if(hit(p))
         {
+            g2d.setColor(Color.cyan);
+            g2d.fillPolygon(xPoints, yPoints, xPoints.length);
             return true;
         }
         return false;
@@ -90,7 +108,11 @@ public class Polygone extends Shape{
 
     @Override
     public Shape copy() {
-        return new Polygone(points, borderColor, fillColor, isFill, isBorder);
+        var tpoints = new ArrayList<Point>();
+        for (Point point : points) {
+            tpoints.add(Point.New(point.getX(), point.getY()));
+        }
+        return new Polygone(tpoints, borderColor, fillColor, isFill, isBorder);
     }
     
 }

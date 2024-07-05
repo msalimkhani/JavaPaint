@@ -63,15 +63,22 @@ public class PaintingPanel extends javax.swing.JPanel {
         pArea.removeShape(s);
         repaint();
     }
+    public void pushComponentToFront(Shape s)
+    {
+        pArea.removeShape(s);
+        pArea.addShape(s);
+        repaint();
+    }
     public Pair<Boolean, Shape> selectComponent(Point p)
     {
-        for (var s : pArea.shapeArr) {
+        for (int i = pArea.shapeArr.size()-1; i >= 0; i--) {
+            Shape s = pArea.shapeArr.get(i);
             if(s.select(getGraphics(), p))
             {
-                return new Pair<Boolean, Shape>(true, s);
+                return new Pair<>(true, s);
             }
         }
-        return new Pair<Boolean, Shape>(false, null);
+        return new Pair<>(false, null);
     }
     /**
      * This method is called from within the constructor to initialize the form.

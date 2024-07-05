@@ -37,8 +37,8 @@ public class PaintingArea {
     public void reDrawAll(Graphics gr){
         //myGr.setColor(Color.white);
         //myGr.fillRect(0, 0, width, height);
-        for (Shape s : shapeArr) {
-            s.draw(gr);
+        for (int i = 0; i < shapeArr.size(); i++) {
+            shapeArr.get(i).draw(gr);
         }
     }
     public void moveShape(Shape s, int xMove, int yMove,Graphics gr) {
