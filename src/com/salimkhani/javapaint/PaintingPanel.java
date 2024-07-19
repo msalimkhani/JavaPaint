@@ -8,6 +8,7 @@ import com.salimkhani.javapaint.application.Shape;
 import com.salimkhani.javapaint.application.Point;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import org.javatuples.Pair;
 
 
@@ -17,8 +18,6 @@ import org.javatuples.Pair;
  */
 public class PaintingPanel extends javax.swing.JPanel {
     private final PaintingArea pArea;
-    private boolean isZoom = false;
-    private double zoomFactor = 1;
 
     /**
      * Creates new form PaintingPanel
@@ -27,30 +26,20 @@ public class PaintingPanel extends javax.swing.JPanel {
         pArea = PaintingArea.New(getHeight(), getWidth());
         initComponents();
     }
-    public void setZoomFactor(double factor){        
-        if(factor<this.zoomFactor){
-            this.zoomFactor=this.zoomFactor/1.1;
-        }
-        else{
-            this.zoomFactor=factor;
-        }
-        this.isZoom=true;
+
+    @Override
+    protected Graphics getComponentGraphics(Graphics g) {
+        return super.getComponentGraphics(g);
     }
-    public double getZoomFactor()
-    {
-        return zoomFactor;
-    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        var at = ((Graphics2D)g).getTransform();
-        if(isZoom)
-        {
-            at.scale(zoomFactor,zoomFactor);
-            isZoom=false;
-            ((Graphics2D)g).transform(at);
+        try {
+            pArea.reDrawAll(g);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        pArea.reDrawAll(g);
     }
     public void drawComponent(Shape s)
     {
@@ -68,6 +57,14 @@ public class PaintingPanel extends javax.swing.JPanel {
         pArea.removeShape(s);
         pArea.addShape(s);
         repaint();
+    }
+    public void zoomInComponent(Shape s)
+    {
+        try {
+            s.zoomIn(1.1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public Pair<Boolean, Shape> selectComponent(Point p)
     {

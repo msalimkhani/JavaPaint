@@ -68,6 +68,11 @@ public class Line extends Shape{
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public void zoomIn(double factor) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     
 
 }

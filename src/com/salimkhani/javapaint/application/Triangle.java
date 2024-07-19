@@ -105,5 +105,10 @@ public class Triangle extends Shape{
     public Shape copy() {
         return new Triangle(Point.New(p1.getX(), p1.getY()), Point.New(p2.getX(), p2.getY()), Point.New(p3.getX(), p3.getY()), borderColor, fillColor, isFill, isBorder);
     }
+
+    @Override
+    public void zoomIn(double factor) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }

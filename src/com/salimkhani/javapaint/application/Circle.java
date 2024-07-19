@@ -3,6 +3,7 @@ package com.salimkhani.javapaint.application;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 
 public class Circle extends Shape{
     public Point center;
@@ -24,37 +25,47 @@ public class Circle extends Shape{
         name = "Circle_" + MyUtils.getRandomInt(10000);
         this.center = center;
         this.radius = radius;
-        
+        configure();
     }
-    
+    private void configure()
+    {
+        sysShape = new java.awt.geom.Ellipse2D.Double(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+    }
     public void draw(Graphics myGr) {
+        var g2d = (Graphics2D) myGr;
         if (isFill && !isBorder){
             myGr.setColor(fillColor);
-            myGr.fillOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            // myGr.fillOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            g2d.fill(sysShape);
             
         }else if(!isFill && isBorder){
             
             myGr.setColor(borderColor);
-            myGr.drawOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            //myGr.drawOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            g2d.draw(sysShape);
         }
         else if(isFill && isBorder)
         {
             myGr.setColor(fillColor);
-            myGr.fillOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            // myGr.fillOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            g2d.fill(sysShape);
             myGr.setColor(borderColor);
             //radius +=0.5;
-            myGr.drawOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            // myGr.drawOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            g2d.draw(sysShape);
         }
         else
         {
             myGr.setColor(borderColor);
-            myGr.drawOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            // myGr.drawOval(center.getX()-radius, center.getY()-radius, radius*2, radius*2);
+            g2d.draw(sysShape);
         }
     }
 
     public void move(int xMove, int yMove) {
         center.setX(center.getX() + xMove);
         center.setY(center.getY() + yMove);
+        configure();
     }
     
     public void erase(){
@@ -81,6 +92,12 @@ public class Circle extends Shape{
         return new Circle(Point.New(center.getX(), center.getY()), radius, borderColor, fillColor, isFill, isBorder);
     }
 
-    
+    @Override
+    public void zoomIn(double factor) {
+        AffineTransform at = new AffineTransform();
+        at.scale(factor, factor);
+        
+        sysShape = at.createTransformedShape(sysShape);
+    }
     
 }

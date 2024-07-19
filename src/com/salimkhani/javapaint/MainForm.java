@@ -7,8 +7,8 @@ package com.salimkhani.javapaint;
 import com.salimkhani.javapaint.application.*;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import javax.swing.*;
 import org.javatuples.Pair;
@@ -31,7 +31,6 @@ public class MainForm extends javax.swing.JFrame {
     private Color curBorColor = Color.black;
     private Color curFillColor = Color.white;
     Point mousePt = null;
-    private boolean hasZoom = false;
 
     /**
      * Creates new form MainForm
@@ -52,6 +51,11 @@ public class MainForm extends javax.swing.JFrame {
         var setBorderColorMenuItem = new JMenuItem("Set Border Color");
         var removeFillColorMenuItem = new JMenuItem("Remove Fill Color");
         var removeBorderColorMenuItem = new JMenuItem("Remove Border Color");
+        var zoomSubMenu = new JMenu("Zoom");
+        var zoomInMenuItem = new JMenuItem("+");
+        var zoomOutMenuItem = new JMenuItem("-");
+        zoomSubMenu.add(zoomInMenuItem);
+        zoomSubMenu.add(zoomOutMenuItem);
         deleteMenuItem.addActionListener((e) -> {
             btnDeleteMenuItemActionPerformed(e);
         });
@@ -66,10 +70,13 @@ public class MainForm extends javax.swing.JFrame {
         setBorderColorMenuItem.addActionListener((e) -> setBorderColorMenuItemActionPerformed(e));
         removeFillColorMenuItem.addActionListener((e) -> removeFillColorMenuItemActionPerformed(e));
         removeBorderColorMenuItem.addActionListener((e) -> removeBorderColorMenuItemActionPerformded(e));
+        zoomInMenuItem.addActionListener((e)->{zoomInMenuItemActionPerformed(e);});
+        zoomOutMenuItem.addActionListener((e)->{zoomOutMenuItemActionPerformed(e);});
         colorSectionSubMenu.add(setFillColorMenuItem);
         colorSectionSubMenu.add(setBorderColorMenuItem);
         colorSectionSubMenu.add(removeFillColorMenuItem);
         colorSectionSubMenu.add(removeBorderColorMenuItem);
+        menuPanel.add(zoomSubMenu);
         menuPanel.add(pushFrontMenuItem);
         menuPanel.add(colorSectionSubMenu);
         menuPanel.add(deleteMenuItem);        
@@ -472,6 +479,18 @@ public class MainForm extends javax.swing.JFrame {
         }
         isSelected = false;
     }
+    private void zoomInMenuItemActionPerformed(ActionEvent e) {
+        if(selectedShape != null & isSelected)
+        {
+            pnlPaint.zoomInComponent(selectedShape);
+            pnlPaint.repaint();
+        }
+        isSelected = false;
+    }
+
+    private void zoomOutMenuItemActionPerformed(ActionEvent e) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     private void btnBorColorChooseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBorColorChooseActionPerformed
         Color color = JColorChooser.showDialog(this, "Select Border Color", curBorColor);
         btnBorColorChoose.setBackground(color);
@@ -607,17 +626,7 @@ public class MainForm extends javax.swing.JFrame {
     }//GEN-LAST:event_pnlPaintMouseExited
 
     private void pnlPaintMouseWheelMoved(java.awt.event.MouseWheelEvent evt) {//GEN-FIRST:event_pnlPaintMouseWheelMoved
-        hasZoom = true;
-        //Zoom in
-        if(evt.getWheelRotation()<0){
-            pnlPaint.setZoomFactor(1.1*pnlPaint.getZoomFactor());
-            pnlPaint.repaint();
-        }
-        //Zoom out
-        if(evt.getWheelRotation()>0){
-            pnlPaint.setZoomFactor(pnlPaint.getZoomFactor()/1.1);
-            pnlPaint.repaint();
-        }
+        
     }//GEN-LAST:event_pnlPaintMouseWheelMoved
 
     private void btnPolyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPolyActionPerformed

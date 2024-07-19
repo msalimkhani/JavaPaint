@@ -114,5 +114,10 @@ public class Polygone extends Shape{
         }
         return new Polygone(tpoints, borderColor, fillColor, isFill, isBorder);
     }
+
+    @Override
+    public void zoomIn(double factor) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
     
 }

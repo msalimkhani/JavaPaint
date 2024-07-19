@@ -5,8 +5,13 @@
         <group>
             <file>file:/C:/Users/mahdi/Documents/NetBeansProjects/JavaPaint/src/com/salimkhani/javapaint/PaintingPanel.java</file>
             <file>file:/C:/Users/mahdi/Documents/NetBeansProjects/JavaPaint/src/com/salimkhani/javapaint/application/Polygone.java</file>
+            <file>file:/C:/Users/mahdi/Documents/NetBeansProjects/JavaPaint/src/com/salimkhani/javapaint/application/Circle.java</file>
+            <file>file:/C:/Users/mahdi/Documents/NetBeansProjects/JavaPaint/src/com/salimkhani/javapaint/application/Rectangle.java</file>
+            <file>file:/C:/Users/mahdi/Documents/NetBeansProjects/JavaPaint/src/com/salimkhani/javapaint/application/Line.java</file>
             <file>file:/C:/Users/mahdi/Documents/NetBeansProjects/JavaPaint/src/com/salimkhani/javapaint/application/Oval.java</file>
             <file>file:/C:/Users/mahdi/Documents/NetBeansProjects/JavaPaint/src/com/salimkhani/javapaint/MainForm.java</file>
+            <file>file:/C:/Users/mahdi/Documents/NetBeansProjects/JavaPaint/src/com/salimkhani/javapaint/application/Shape.java</file>
+            <file>file:/C:/Users/mahdi/Documents/NetBeansProjects/JavaPaint/src/com/salimkhani/javapaint/application/Triangle.java</file>
         </group>
     </open-files>
 </project-private>
